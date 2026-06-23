@@ -1,163 +1,180 @@
-# YOLO-TS: Real-Time Traffic Sign Detection with Enhanced Accuracy Using Optimized Receptive Fields and Anchor-Free Fusion (IEEE TITS)
+YOLO-TS-DRF: Real-Time Traffic Sign Detection Using Dynamic Receptive Fields
+📌 Overview
 
- Junzhou Chen, Heqiang Huang, Ronghui Zhang, Nengchao Lyu, Yanyong Guo, Hong-Ning Dai, Hong Yan
+This project presents YOLO-TS-DRF, an enhanced traffic sign detection framework designed to improve the detection of small traffic signs in real-world driving environments. The proposed model is built upon the YOLO-TS architecture and introduces three key enhancements:
 
-[Paper Download](https://ieeexplore.ieee.org/document/11130531)
+Dynamic Receptive Field (DRF) Module
+Small-Object Aware Resolution Optimization (SARO)
+Adaptive Two-Stage Augmentation Training Strategy (ATATS)
 
-> **Abstract:** * Ensuring safety in both autonomous driving and advanced driver-assistance systems (ADAS) depends critically on the efficient deployment of traffic sign recognition technology. While current methods show effectiveness, they often compromise between speed and accuracy. To address this issue, we present a novel real-time and efficient road sign detection network, YOLO-TS. This network significantly improves performance by optimizing the receptive fields of multi-scale feature maps to align more closely with the size distribution of traffic signs in various datasets. Moreover, our innovative feature-fusion strategy, leveraging the flexibility of Anchor-Free methods, allows for multi-scale object detection on a high-resolution feature map abundant in contextual information, achieving remarkable enhancements in both accuracy and speed. To mitigate the adverse effects of the grid pattern caused by dilated convolutions on the detection of smaller objects, we have devised a unique module that not only mitigates this grid effect but also widens the receptive field to encompass an extensive range of spatial contextual information, thus boosting the efficiency of information usage. Moreover, to address the scarcity of traffic sign datasets, especially under adverse weather conditions, we introduce two novel datasets: Generated-TT100K-weather and CAWTSSS. Extensive evaluations conducted on challenging public benchmarks—including TT100K, CCTSDB2021, and GTSDB—as well as on our proposed datasets, demonstrate that YOLO-TS surpasses current state-of-the-art methods in both accuracy and inference speed.*
+The model is trained and evaluated on the TT100K dataset and achieves 96.0% mAP@50, outperforming the baseline YOLO-TS model while maintaining real-time performance.
 
-## Method
-![Flowchart](fig/Flowchart.jpg)
-Application Scenarios of Traffic Sign Detection in Autonomous Driving.
+🎯 Project Objectives
+Improve traffic sign detection accuracy for small objects.
+Enhance feature extraction through adaptive receptive fields.
+Preserve fine-grained traffic sign details using higher input resolution.
+Improve model generalization using stage-wise augmentation training.
+Maintain real-time inference capability for Intelligent Transportation Systems (ITS) and ADAS applications.
+🏗️ Proposed Architecture
 
-![network](fig/network.png)
-**YOLO-TS architecture.** The structure of YOLO-TS.
+The proposed YOLO-TS-DRF framework consists of:
 
-## Datasets
-* The download link for the dataset is below:
-<table>
-<thead>
-  <tr>
-    <th>Datsets</th>
-    <th>TT100K</th>
-    <th>CCTSDB2021</th>
-    <th>GTSDB</th>
-    <th>Generated-TT100K-weather</th>
-    <th>CAWTSSS</th>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-    <th>Quark Cloud</th>
-    <th> <a href="https://pan.quark.cn/s/24062830411b">Download (PDkS)</a> </th>
-    <th> <a href="https://pan.quark.cn/s/ea20e9bfb364">Download (XTy3)</a> </th>
-    <th> <a href="https://pan.quark.cn/s/b4b672efc69b">Download (xkND)</a> </th>
-    <th> <a href="https://pan.quark.cn/s/eb6c18fb4ec5">Download (is1U)</a> </th>
-    <th> <a href="https://pan.quark.cn/s/5b4cd5f5de1a?pwd=tydP">Download (tydp)</a> </th>
-  </tr>
-   <tr>
-    <th>Google Drive</th>
-    <th> <a - </a> </th>
-    <th> <a - </th>
-    <th> <a - </a> </th>
-    <th> <a href="https://drive.google.com/drive/folders/1bbIGjhTXnWIgicjVX_L2kxxeKGlGdik9?usp=sharing">Download</a> </th>
-    <th> <a - </a> </th>
-  </tr>
-</tbody>
-</table>
+1. Backbone Network
 
-* The file structure of the downloaded dataset is as follows.
+Extracts hierarchical visual features from input images.
 
-```
-datasets
-├── TT100K
-│   ├── train
-│   └── test
-├── CCTSDB2021
-│   ├── train
-│   ├── val
-│   └── Classification based on weather and environment
-│       ├── cloud
-│       ├── foggy
-│       ├── night
-│       ├── rain
-│       ├── snow
-│       ├── sunny
-├── GTSDB
-│   ├── train
-│   └── val
-├── Generated-TT100K-weather
-│   ├── train
-│   ├── test
-│   └── Classification based on weather and environment
-│       ├── night-test
-│       ├── rain-test
-├── CAWTSSS
-│   ├── train
-│   ├── val
-│   └── weather-test
-│       ├── cloud
-│       ├── foggy
-│       ├── night
-│       ├── rain
-│       ├── sand
-│       ├── snow
-│       ├── sunny
-```
+2. Dynamic Receptive Field (DRF) Module
 
-## Requirements
-* To install requirements: 
-```
-pip install -r requirements.txt
-```
+Introduces adaptive multi-scale feature extraction through:
 
-## (Optional: If you are training your own dataset.) 
-### Get n1,n2,n3,n4,n5 and Replace them in YOLO-TS.yaml
-* Replace the path in calculate_depth.py with the path to your dataset's training set, and name it txt_name.
-* Run python calculate_depth.py to obtain n1~n5.
-* Replace n1~n5 in the backbone section of YOLO-TS.yaml with the values obtained in step 2.
+3×3 Convolution Branch
+5×5 Convolution Branch
+Dilated 3×3 Convolution Branch
+Attention-Based Feature Fusion
+3. Neck Network
 
-## Usage
-### Python
+Performs multi-scale feature fusion to enhance object representation.
 
-YOLO may also be used directly in a Python environment, and accepts the same [arguments](https://docs.ultralytics.com/usage/cfg/) as in the CLI example above:
+4. Anchor-Free Detection Head
 
-```python
-from ultralytics import YOLO
+Predicts:
 
-if __name__ == '__main__':
+Bounding Boxes
+Object Confidence
+Traffic Sign Classes
+🚀 Proposed Novelties
+1️⃣ Dynamic Receptive Field (DRF)
 
-    # Load a model
-    model = YOLO("./YOLO-TS_TT100K.yaml")  # or model = YOLO("./best.pt")
+Traditional convolution layers use fixed receptive fields, which are not optimal for objects of varying sizes.
 
-    # Train the model
-    model.train(data="./TT100K-2016.yaml", epochs=200, batch=48, imgsz=640, device='0,1,2,3') # GTSDB use imgsz=1024
+DRF dynamically combines:
 
-    # Evaluate model performance on the validation set
-    metrics = model.val(data="./TT100K-2016.yaml", imgsz=640, batch=1, device='0') # GTSDB use imgsz=1024
+Local Features (3×3)
+Medium Context Features (5×5)
+Global Context Features (Dilated Convolution)
 
-    # Export the model to ONNX format
-    path = model.export(format="engine", device='0', half=True, opset=12)
-```
+This allows the network to adaptively focus on traffic signs of different scales.
 
-See YOLO [Python Docs](https://docs.ultralytics.com/usage/python/) for more examples.
+2️⃣ Small-Object Aware Resolution Optimization (SARO)
 
-## Experiment result
-![result1](fig/result1.png)
+Traffic signs in TT100K are often extremely small.
 
-## Pre-trained Models
-The trained weight files for different datasets are listed below, including both `.pth` and `.trt` formats.
+SARO increases the input resolution from:
 
-<table>
-<thead>
-  <tr>
-    <th>Weights</th>
-    <th>ckpt</th>
-    <th>tensorrt</th>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-    <th>Quark Cloud</th>
-    <th colspan="2"> <a href="https://pan.quark.cn/s/6a3002dfaab0">Download (MQC4)</a> </th>
-  </tr>
-   <tr>
-    <th>Google Drive</th>
-    <th colspan="2"> <a href="https://drive.google.com/drive/folders/1l-em856gi4810U7qU1fo0epdfbJ3_sus?usp=sharing">Download </a> </th>
-  </tr>
-</tbody>
-</table>
+640 × 640 → 1024 × 1024
 
-## Citation
-If you use YOLO-TS, please consider citing:
-```
-@article{yolo-ts,
-  title={YOLO-TS: Real-Time Traffic Sign Detection with Enhanced Accuracy Using Optimized Receptive Fields and Anchor-Free Fusion},
-  author={Chen, Junzhou and Huang, Heqiang and Zhang, Ronghui and Lyu, Nengchao and Guo, Yanyong and Dai, Hong-Ning and Yan, Hong},
-  journal={IEEE Transactions on Intelligent Transportation Systems},
-  year={2025}
-}
-```
+Benefits:
 
-## Contact
-Should you have any question or suggestion, please contact huanghq77@mail2.sysu.edu.cn
+Preserves fine details
+Improves visibility of distant traffic signs
+Enhances small-object detection performance
+3️⃣ Adaptive Two-Stage Augmentation Training Strategy (ATATS)
+
+Training is divided into two stages:
+
+Stage 1: Robust Feature Learning
+
+Heavy augmentations:
+
+Mosaic
+MixUp
+Copy-Paste
+Color Jitter
+Stage 2: Fine-Tuning
+
+Reduced augmentation:
+
+Mosaic disabled
+Real image training
+Improved localization accuracy
+📊 Dataset
+TT100K Dataset
+
+The TT100K dataset contains:
+
+High-resolution traffic scene images
+Multiple traffic sign categories
+Significant scale variations
+Small object detection challenges
+
+Official Website:
+
+https://cg.cs.tsinghua.edu.cn/traffic-sign/
+
+⚙️ Training Configuration
+Parameter	Value
+Epochs	200
+Batch Size	16
+Input Resolution	1024 × 1024
+Optimizer	SGD
+Learning Rate	0.01
+Weight Decay	5e-4
+Label Smoothing	0.1
+Scheduler	Cosine Annealing
+GPU	NVIDIA A100
+📈 Results
+Model	mAP@50	FPS
+YOLO-TS (Baseline)	92.0%	137.0
+YOLO-TS-DRF (Proposed)	96.0%	89.2
+Key Improvements
+
+✅ +4.0% mAP@50 improvement
+
+✅ Better small-object detection
+
+✅ Adaptive feature extraction
+
+✅ Real-time inference maintained (>30 FPS)
+
+📂 Project Structure
+YOLO-TS-DRF/
+│
+├── datasets/
+│   ├── images/
+│   ├── labels/
+│   └── data.yaml
+│
+├── models/
+│   ├── YOLO_TS_DRF.yaml
+│   └── drf.py
+│
+├── results/
+│   ├── confusion_matrix.png
+│   ├── PR_curve.png
+│   ├── F1_curve.png
+│   └── sample_predictions/
+│
+├── train.py
+├── detect.py
+├── requirements.txt
+├── README.md
+└── best.pt
+🛠️ Technologies Used
+Python
+PyTorch
+Ultralytics YOLO
+OpenCV
+NumPy
+Matplotlib
+Pandas
+📋 Evaluation Metrics
+
+The model is evaluated using:
+
+Precision
+Recall
+F1-Score
+mAP@50
+Inference FPS
+🔮 Future Work
+Lightweight DRF design for edge devices
+Deployment on embedded systems
+Traffic sign recognition integration
+Adverse weather adaptation
+Multi-dataset evaluation
+
+👨‍💻 Author
+
+Prince Shakya
+B.Tech, Computer Science and Engineering
+Rajkiya Engineering College, Kannauj
